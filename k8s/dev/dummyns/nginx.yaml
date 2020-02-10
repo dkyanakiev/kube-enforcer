@@ -1,0 +1,63 @@
+apiVersion: v1 
+kind: Service 
+metadata: 
+  name: nginx
+  namespace: {{ ns }} 
+  labels: 
+    app: nginx 
+    env: {{ env }}
+spec: 
+  ports: 
+  - port: 80
+    name: tcp
+    protocol: TCP 
+    targetPort: tcp-public
+  selector: 
+    app: nginx 
+  type: NodePort 
+--- 
+apiVersion: v1 
+kind: Service 
+metadata: 
+  name: wmt 
+  labels: 
+    app: nginx 
+spec: 
+  ports: 
+  - port: 8080
+    name: tcp-int
+    protocol: TCP 
+    targetPort: tcp-internal
+  selector: 
+    app: nginx 
+--- 
+apiVersion: apps/v1 
+kind: StatefulSet 
+metadata: 
+  name: nginx 
+spec: 
+  selector: 
+    matchLabels: 
+      app: nginx 
+  serviceName: "nginx" 
+  replicas: 1
+  template: 
+    metadata: 
+      labels: 
+        app: nginx 
+    spec: 
+      terminationGracePeriodSeconds: 30 
+      containers: 
+      - name: nginx 
+        image: nginx:latest
+        imagePullPolicy: Always
+        #restartPolicy: Always
+        ports: 
+        - name: tcp-public
+          containerPort: 80 
+        - name: tcp-internal
+          containerPort: 8080 
+        env: 
+        - name: ENVIRONMENT 
+          value: {{ env }} 
+      

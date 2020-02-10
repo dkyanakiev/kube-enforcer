@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    name: kube-enforce
+  name: kube-enforce
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: kube-enforce
+  template:
+    metadata:
+      labels:
+        name: kube-enforce
+    spec:
+      serviceAccountName: kube-enforce-role
+      containers:
+      - name: kube-enforce
+        imagePullPolicy: Always
+        image: kube-enforcer:latest
+        env:
+          - name: DEPLOY_ENV
+            value: dev
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: kube-enforce-role
+subjects:
+- kind: ServiceAccount
+  name: kube-enforce-role
+  namespace: default
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kube-enforce-role
+  namespace: default
