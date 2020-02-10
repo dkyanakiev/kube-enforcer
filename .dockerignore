@@ -1,3 +1,5 @@
 deployment.yaml
 README.md
 test.sh
+*__pycache__*
+*.pyc

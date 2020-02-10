@@ -19,7 +19,7 @@ spec:
       containers:
       - name: kube-enforce
         imagePullPolicy: Always
-        image: kube-enforcer:latest
+        image: dkyanakiev/kube-enforcer:latest
         env:
           - name: DEPLOY_ENV
             value: dev
